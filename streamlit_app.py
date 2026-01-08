@@ -16,18 +16,27 @@ from __future__ import annotations
 import asyncio
 import json
 import sys
+import types
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import streamlit as st
 
-# Ensure project root is on sys.path when Streamlit executes this file directly.
-# Without this, `import prototype2_demand_supply...` can fail because Streamlit puts the script
-# directory (prototype2_demand_supply/) on sys.path, not its parent.
-PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
+# Streamlit Cloud checks out the repo into a directory named after the repo
+# (e.g., /mount/src/agenticaibasicprototype). In our local dev machine, this folder
+# is named prototype2_demand_supply, so imports like `prototype2_demand_supply.*` work.
+# In cloud, the folder name differs, so we create a small compatibility shim:
+# - add repo root to sys.path
+# - alias the repo root as the `prototype2_demand_supply` package
+REPO_ROOT = Path(__file__).resolve().parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+if "prototype2_demand_supply" not in sys.modules:
+    pkg = types.ModuleType("prototype2_demand_supply")
+    pkg.__path__ = [str(REPO_ROOT)]  # type: ignore[attr-defined]
+    sys.modules["prototype2_demand_supply"] = pkg
 
 from prototype2_demand_supply.agents.tools import fetch_relevant_products_by_abc_xyz
 from prototype2_demand_supply.graph.demand_flow import build_demand_flow_graph
