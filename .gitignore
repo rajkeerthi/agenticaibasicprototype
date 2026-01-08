@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+venv/
+.venv/
+
+# Secrets / local config
+.env
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Streamlit
+.streamlit/
+
+# Local mock DB stores (runtime outputs)
+prototype2_demand_supply/DBmock/*_store.json
+DBmock/*_store.json
+
+
