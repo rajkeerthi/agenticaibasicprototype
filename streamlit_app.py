@@ -485,6 +485,20 @@ def _render_results_and_approvals(out: Dict[str, Any]) -> None:
 
 def _render_flow_panel() -> None:
     st.subheader("Task Flow")
+    assets_dir = Path(__file__).resolve().parent / "assets"
+    diagram_candidates: List[Path] = []
+    if assets_dir.exists():
+        diagram_candidates = sorted(assets_dir.glob("Gemini_Generated_Image_*.png"))
+        if not diagram_candidates:
+            diagram_candidates = sorted(assets_dir.glob("*.png"))
+
+    if diagram_candidates:
+        with st.popover("View diagram", use_container_width=False):
+            st.image(str(diagram_candidates[0]), use_container_width=True)
+    else:
+        # Non-blocking: app still works without the optional diagram asset.
+        st.caption("Diagram image not found (expected `assets/*.png`).")
+
     st.graphviz_chart(_dot_flow(active=st.session_state.run.active_node), use_container_width=True)
 
     run = st.session_state.run
